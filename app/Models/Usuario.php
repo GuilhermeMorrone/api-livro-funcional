@@ -22,4 +22,14 @@ class Usuario extends Model
     {
         return $this->belongsToMany(Review::class, 'usuario_review', 'usuario_id', 'review_id');
     }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($usuario) {
+            $usuario->reviews()->delete();
+        });
+    }
+
 }

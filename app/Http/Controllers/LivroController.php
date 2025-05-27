@@ -34,7 +34,7 @@ class LivroController extends Controller
             'titulo' => 'required|string|max:255',
             'autor_id' => 'required|exists:autores,id',
             'genero_id' => 'nullable|exists:generos,id',
-            // demais validações que você precise
+           
         ]);
 
         $livro = Livro::create($request->all());
@@ -61,4 +61,12 @@ class LivroController extends Controller
         $livro->delete();
         return response()->json(null, 204);
     }
+
+    public function listarLivrosComReviewsAutorGenero()
+    {
+        $livros = Livro::with(['reviews', 'autor', 'genero'])->get();
+        return response()->json($livros);
+    }
+
 }
+

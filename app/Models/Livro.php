@@ -28,5 +28,15 @@ class Livro extends Model
     {
         return $this->belongsToMany(Review::class, 'livro_review', 'livro_id', 'review_id');
     }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($livro) {
+            $livro->reviews()->delete();
+        });
+    }
+
 }
 

@@ -30,18 +30,29 @@ class UsuarioController extends Controller
 
     public function store(Request $request)
     {
-        $usuario = Usuario::create($request->all());
+        $validated = $request->validate([
+            'nome' => 'required|string|max:255',
+            'email' => 'required|email|unique:usuarios,email',
+        ]);
+
+        $usuario = Usuario::create($validated);
         return new UsuarioResource($usuario);
     }
 
     public function update(Request $request, $id)
     {
         $usuario = Usuario::findOrFail($id);
-        $usuario->update($request->all());
+
+        $validated = $request->validate([
+            'nome' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|email|unique:usuarios,email,' . $id,
+        ]);
+
+        $usuario->update($validated);
         return new UsuarioResource($usuario);
     }
 
-    public function destroy($id)
+    public function deletar($id)
     {
         $usuario = Usuario::findOrFail($id);
         $usuario->delete();

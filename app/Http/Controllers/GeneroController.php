@@ -21,6 +21,12 @@ class GeneroController extends Controller
         return GeneroResource::make($genero);
     }
 
+    public function listarGenerosComLivros()
+    {
+        $generos = Genero::with('livros')->get();
+        return GeneroResource::collection($generos);
+    }
+
     public function listarLivros($id)
     {
         $genero = Genero::findOrFail($id);
@@ -32,7 +38,6 @@ class GeneroController extends Controller
     {
         $request->validate([
             'nome' => 'required|string|max:255',
-            // outras validações se precisar
         ]);
 
         $genero = Genero::create($request->all());
@@ -45,7 +50,6 @@ class GeneroController extends Controller
 
         $request->validate([
             'nome' => 'sometimes|required|string|max:255',
-            // outras validações se precisar
         ]);
 
         $genero->update($request->all());

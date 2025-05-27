@@ -9,16 +9,10 @@ use App\Http\Resources\LivroResource;
 
 class AutorController extends Controller
 {
-    public function index()
+    public function listarAutoresComLivros()
     {
         $autores = Autor::with('livros')->get();
         return AutorResource::collection($autores);
-    }
-
-    public function show($id)
-    {
-        $autor = Autor::with('livros')->findOrFail($id);
-        return AutorResource::make($autor);
     }
 
     public function listarLivros($id)
@@ -28,34 +22,25 @@ class AutorController extends Controller
         return LivroResource::collection($livros);
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nome' => 'required|string|max:255',
-            // adicione outras validações que forem necessárias
-        ]);
-
-        $autor = Autor::create($request->all());
-        return AutorResource::make($autor);
-    }
-
-    public function update(Request $request, $id)
-    {
-        $autor = Autor::findOrFail($id);
-
-        $request->validate([
-            'nome' => 'sometimes|required|string|max:255',
-            // adicione outras validações que forem necessárias
-        ]);
-
-        $autor->update($request->all());
-        return AutorResource::make($autor);
-    }
-
-    public function destroy($id)
+    public function deletar($id)
     {
         $autor = Autor::findOrFail($id);
         $autor->delete();
         return response()->json(null, 204);
     }
+
+    public function destroy($id)
+{
+    $autor = Autor::findOrFail($id);
+
+    foreach ($autor->livros as $livro) {
+        $livro->reviews()->delete(); 
+        $livro->delete();
+    }
+
+    $autor->delete();
+
+    return response()->json(null, 204);
+}
+
 }

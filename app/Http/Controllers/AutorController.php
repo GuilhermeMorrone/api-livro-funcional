@@ -4,47 +4,54 @@ namespace App\Http\Controllers;
 
 use App\Models\Autor;
 use Illuminate\Http\Request;
+use App\Http\Resources\AutorResource;
+use App\Http\Resources\LivroResource;
 
 class AutorController extends Controller
 {
-    
     public function index()
     {
         $autores = Autor::with('livros')->get();
-        return response()->json($autores);
+        return AutorResource::collection($autores);
     }
 
-    
     public function show($id)
     {
         $autor = Autor::with('livros')->findOrFail($id);
-        return response()->json($autor);
+        return AutorResource::make($autor);
     }
 
-   
     public function listarLivros($id)
     {
         $autor = Autor::findOrFail($id);
         $livros = $autor->livros;
-        return response()->json($livros);
+        return LivroResource::collection($livros);
     }
-
 
     public function store(Request $request)
     {
+        $request->validate([
+            'nome' => 'required|string|max:255',
+            // adicione outras validações que forem necessárias
+        ]);
+
         $autor = Autor::create($request->all());
-        return response()->json($autor, 201);
+        return AutorResource::make($autor);
     }
 
-    
     public function update(Request $request, $id)
     {
         $autor = Autor::findOrFail($id);
+
+        $request->validate([
+            'nome' => 'sometimes|required|string|max:255',
+            // adicione outras validações que forem necessárias
+        ]);
+
         $autor->update($request->all());
-        return response()->json($autor);
+        return AutorResource::make($autor);
     }
 
-   
     public function destroy($id)
     {
         $autor = Autor::findOrFail($id);

@@ -4,29 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Models\Review;
 use Illuminate\Http\Request;
+use App\Http\Resources\ReviewResource;
 
 class ReviewController extends Controller
 {
-    
     public function index()
     {
-        return response()->json(Review::all());
+        $reviews = Review::all();
+        return ReviewResource::collection($reviews);
     }
 
-    
     public function show($id)
     {
         $review = Review::find($id);
         if (!$review) {
             return response()->json(['message' => 'Review não encontrada'], 404);
         }
-        return response()->json($review);
+        return new ReviewResource($review);
     }
 
-    
     public function store(Request $request)
     {
-        
         $request->validate([
             'nota' => 'required|integer|min:0|max:5',
             'comentario' => 'required|string',
@@ -35,10 +33,9 @@ class ReviewController extends Controller
         ]);
 
         $review = Review::create($request->all());
-        return response()->json($review, 201);
+        return new ReviewResource($review);
     }
 
-    
     public function update(Request $request, $id)
     {
         $review = Review::find($id);
@@ -52,10 +49,9 @@ class ReviewController extends Controller
         ]);
 
         $review->update($request->all());
-        return response()->json($review);
+        return new ReviewResource($review);
     }
 
-    
     public function destroy($id)
     {
         $review = Review::find($id);

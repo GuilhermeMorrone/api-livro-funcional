@@ -31,15 +31,10 @@ Route::prefix('generos')->group(function () {
 });
 
 Route::prefix('reviews')->group(function () {
-    Route::post('/', [ReviewController::class, 'criar']);
-    Route::delete('/{review}', [ReviewController::class, 'deletar']);
+    Route::get('/', [ReviewController::class, 'index']);
+    Route::post('/', [ReviewController::class, 'store']);
+    Route::get('{id}', [ReviewController::class, 'show']);
+    Route::put('{id}', [ReviewController::class, 'update']);
+    Route::delete('{id}', [ReviewController::class, 'destroy']);
 });
 
-
-Route::prefix('reviews')->group(function () {
-    Route::get('/', 'App\Http\Controllers\ReviewController@index');         
-    Route::post('/', 'App\Http\Controllers\ReviewController@store');        
-    Route::get('{id}', 'App\Http\Controllers\ReviewController@show');       
-    Route::put('{id}', 'App\Http\Controllers\ReviewController@update');     
-    Route::delete('{id}', 'App\Http\Controllers\ReviewController@destroy'); 
-});

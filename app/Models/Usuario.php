@@ -14,16 +14,16 @@ class Usuario extends Model
     protected $fillable = [
         'nome',
         'email',
-        'senha',
+        'senha', 
     ];
 
-    // Relacionamento com reviews (através da tabela pivô usuario_review)
+
     public function reviews()
     {
-        return $this->belongsToMany(Review::class, 'usuario_review', 'usuario_id', 'review_id');
+        return $this->hasMany(Review::class);
     }
 
-    public static function boot()
+    protected static function boot()
     {
         parent::boot();
 
@@ -31,5 +31,4 @@ class Usuario extends Model
             $usuario->reviews()->delete();
         });
     }
-
 }

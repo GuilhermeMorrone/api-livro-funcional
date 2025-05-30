@@ -1,9 +1,8 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
-
 use Illuminate\Database\Eloquent\Model;
 
 class Genero extends Model
@@ -19,16 +18,12 @@ class Genero extends Model
         return $this->belongsToMany(Livro::class, 'genero_livro', 'genero_id', 'livro_id');
     }
 
-    public static function boot()
+    protected static function boot()
     {
         parent::boot();
 
         static::deleting(function ($genero) {
-            foreach ($genero->livros as $livro) {
-                $livro->genero_id = null;
-                $livro->save();
-            }
+            $genero->livros()->detach();
         });
     }
-
 }

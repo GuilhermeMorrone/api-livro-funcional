@@ -1,9 +1,8 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
-
 use Illuminate\Database\Eloquent\Model;
 
 class Livro extends Model
@@ -26,10 +25,10 @@ class Livro extends Model
 
     public function reviews()
     {
-        return $this->belongsToMany(Review::class, 'livro_review', 'livro_id', 'review_id');
+        return $this->hasMany(Review::class);
     }
 
-    public static function boot()
+    protected static function boot()
     {
         parent::boot();
 
@@ -37,6 +36,4 @@ class Livro extends Model
             $livro->reviews()->delete();
         });
     }
-
 }
-

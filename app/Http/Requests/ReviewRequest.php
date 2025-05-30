@@ -16,8 +16,10 @@ class ReviewRequest extends FormRequest
         return [
             'livro_id' => 'required|exists:livros,id',
             'usuario_id' => 'required|exists:usuarios,id',
-            'nota' => 'required|integer|min:0|max:5',
+            'nota' => 'required|integer|min:0|max:5', // aqui esta llimitando a note de 0 a 5
             'comentario' => 'nullable|string',
         ];
     }
+
+    
 }

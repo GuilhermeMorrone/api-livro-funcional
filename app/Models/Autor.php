@@ -1,9 +1,8 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
-
 use Illuminate\Database\Eloquent\Model;
 
 class Autor extends Model
@@ -19,13 +18,14 @@ class Autor extends Model
         return $this->belongsToMany(Livro::class, 'livro_autor', 'autor_id', 'livro_id');
     }
 
-    public static function boot()
-{
-    parent::boot();
+    protected static function boot()
+    {
+        parent::boot();
 
-    static::deleting(function ($autor) {
-        $autor->livros()->delete();
-    });
-}
-
+        static::deleting(function ($autor) {
+            foreach ($autor->livros as $livro) {
+                $livro->delete();
+            }
+        });
+    }
 }

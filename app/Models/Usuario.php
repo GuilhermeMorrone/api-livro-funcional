@@ -14,13 +14,12 @@ class Usuario extends Model
     protected $fillable = [
         'nome',
         'email',
-        'senha', 
+        'senha',
     ];
-
 
     public function reviews()
     {
-        return $this->hasMany(Review::class);
+        return $this->hasMany(Review::class, 'usuario_id');
     }
 
     protected static function boot()
@@ -32,3 +31,4 @@ class Usuario extends Model
         });
     }
 }
+

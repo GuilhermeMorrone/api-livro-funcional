@@ -17,6 +17,8 @@ class LivroRequest extends FormRequest
             'titulo' => 'required|string|max:255',
             'autor_id' => 'required|exists:autores,id',
             'genero_id' => 'required|exists:generos,id',
+            'sinopse' => 'required|string',
         ];
     }
 }
+

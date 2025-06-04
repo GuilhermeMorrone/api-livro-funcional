@@ -13,12 +13,15 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
-            $table->tinyInteger('nota')->unsigned(); 
+            $table->tinyInteger('nota')->unsigned();
             $table->text('texto')->nullable();
+
+            $table->foreignId('usuario_id')->constrained('usuarios')->onDelete('cascade');
+            $table->foreignId('livro_id')->constrained('livros')->onDelete('cascade');
+
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.

@@ -15,6 +15,8 @@ class AutorRequest extends FormRequest
     {
         return [
             'nome' => 'required|string|max:255',
+            'data_nascimento' => 'required|date',
+            'biografia' => 'required|string',
         ];
     }
 }

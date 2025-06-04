@@ -16,6 +16,7 @@ class UsuarioRequest extends FormRequest
         return [
             'nome' => 'required|string|max:255',
             'email' => 'required|email|unique:usuarios,email',
+            'senha' => 'required|string|min:6',
         ];
     }
 }

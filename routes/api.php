@@ -21,9 +21,10 @@ Route::prefix('autores')->group(function () {
     Route::post('/', [AutorController::class, 'store']); 
     Route::get('/{autor}', [AutorController::class, 'show']); 
     Route::put('/{autor}', [AutorController::class, 'update']);
-    Route::delete('/{autor}', [AutorController::class, 'deletar']); 
+    Route::delete('/{autor}', [AutorController::class, 'destroy']); 
     Route::get('/{autor}/livros', [AutorController::class, 'listarLivros']); 
 });
+
 
 Route::prefix('usuarios')->group(function () {
     Route::get('/', [UsuarioController::class, 'index']); 

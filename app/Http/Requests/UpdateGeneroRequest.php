@@ -14,7 +14,7 @@ class UpdateGeneroRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nome' => 'sometimes|required|string|max:100|unique:genero,nome,' . $this->genero,
+            'nome' => 'sometimes|required|string|max:40|unique:genero,nome,' . $this->genero,
         ];
     }
 }

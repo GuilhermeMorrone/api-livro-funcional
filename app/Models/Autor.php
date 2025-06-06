@@ -2,30 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Autor extends Model
 {
-    use HasFactory;
-
-    protected $table = 'autores';
+    protected $table = 'autor';
 
     protected $fillable = ['nome', 'data_nascimento', 'biografia'];
 
-    public function livros()
+    public function livro()
     {
-        return $this->belongsToMany(Livro::class, 'livro_autor', 'autor_id', 'livro_id');
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::deleting(function ($autor) {
-            foreach ($autor->livros as $livro) {
-                $livro->delete();
-            }
-        });
+        return $this->hasMany(Livro::class);
     }
 }

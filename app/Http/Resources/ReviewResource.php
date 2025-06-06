@@ -12,8 +12,8 @@ class ReviewResource extends JsonResource
         return [
             'id' => $this->id,
             'nota' => $this->nota,
-            'texto' => $this->texto,
             'usuario' => new UsuarioResource($this->whenLoaded('usuario')),
+             'texto' => $this->texto,
         ];
     }
 }

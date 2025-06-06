@@ -12,10 +12,10 @@ class LivroResource extends JsonResource
         return [
             'id' => $this->id,
             'titulo' => $this->titulo,
-            'sinopse' => $this->sinopse,
-            'autor' => new AutorResource($this->whenLoaded('autor')),
             'genero' => new GeneroResource($this->whenLoaded('genero')),
+            'autor' => new AutorResource($this->whenLoaded('autor')),
             'reviews' => ReviewResource::collection($this->whenLoaded('reviews')),
+            'sinopse' => $this->sinopse,
         ];
     }
 }

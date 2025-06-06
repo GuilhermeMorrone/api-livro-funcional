@@ -2,16 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Review extends Model
 {
-    use HasFactory;
+    protected $table = 'review';
 
-    protected $table = 'reviews';
-
-    protected $fillable = ['livro_id', 'usuario_id', 'comentario', 'nota'];
+    protected $fillable = ['nota', 'texto', 'usuario_id', 'livro_id'];
 
     public function usuario()
     {
@@ -21,16 +18,5 @@ class Review extends Model
     public function livro()
     {
         return $this->belongsTo(Livro::class);
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function ($review) {
-            if ($review->nota < 0 || $review->nota > 5) {
-                throw new \Exception("A nota da review deve ser entre 0 e 5.");
-            }
-        });
     }
 }

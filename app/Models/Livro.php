@@ -2,38 +2,26 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Livro extends Model
 {
-    use HasFactory;
+    protected $table = 'livro';
 
-    protected $table = 'livros';
+    protected $fillable = ['titulo', 'sinopse', 'autor_id', 'genero_id'];
 
-    protected $fillable = ['titulo', 'sinopse'];
-
-    public function autores()
+    public function autor()
     {
-        return $this->belongsToMany(Autor::class, 'livro_autor', 'livro_id', 'autor_id');
+        return $this->belongsTo(Autor::class);
     }
 
-    public function generos()
+    public function genero()
     {
-        return $this->belongsToMany(Genero::class, 'genero_livro', 'livro_id', 'genero_id');
+        return $this->belongsTo(Genero::class)->withDefault();
     }
 
     public function reviews()
     {
         return $this->hasMany(Review::class);
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::deleting(function ($livro) {
-            $livro->reviews()->delete();
-        });
     }
 }

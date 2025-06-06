@@ -2,33 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Usuario extends Model
+class Usuario extends Authenticatable
 {
-    use HasFactory;
+    protected $table = 'usuario';
 
-    protected $table = 'usuarios';
+    protected $fillable = ['nome', 'email', 'senha'];
 
-    protected $fillable = [
-        'nome',
-        'email',
-        'senha',
-    ];
+    protected $hidden = ['senha'];
 
     public function reviews()
     {
-        return $this->hasMany(Review::class, 'usuario_id');
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::deleting(function ($usuario) {
-            $usuario->reviews()->delete();
-        });
+        return $this->hasMany(Review::class);
     }
 }
-

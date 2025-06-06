@@ -2,39 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreGeneroRequest;
-use App\Http\Requests\UpdateGeneroRequest;
-use App\Http\Resources\GeneroResource;
+use App\Http\Requests\StoreLivroRequest;
+use App\Http\Requests\UpdateLivroRequest;
 use App\Http\Resources\LivroResource;
-use App\Services\GeneroService;
+use App\Http\Resources\ReviewResource;
+use App\Services\LivroService;
 
-class GeneroController extends Controller
+class LivroController extends Controller
 {
     protected $service;
 
-    public function __construct(GeneroService $service)
+    public function __construct(LivroService $service)
     {
         $this->service = $service;
     }
 
     public function index()
     {
-        return GeneroResource::collection($this->service->listarComLivros());
+        return LivroResource::collection($this->service->listarComAutorGenero());
     }
 
-    public function store(StoreGeneroRequest $request)
+    public function store(StoreLivroRequest $request)
     {
-        return new GeneroResource($this->service->criar($request->validated()));
+        return new LivroResource($this->service->criar($request->validated()));
     }
 
     public function show($id)
     {
-        return new GeneroResource($this->service->buscarComLivros($id));
+        return new LivroResource($this->service->buscarComTudo($id));
     }
 
-    public function update(UpdateGeneroRequest $request, $id)
+    public function update(UpdateLivroRequest $request, $id)
     {
-        return new GeneroResource($this->service->atualizar($id, $request->validated()));
+        return new LivroResource($this->service->atualizar($id, $request->validated()));
     }
 
     public function destroy($id)
@@ -43,13 +43,13 @@ class GeneroController extends Controller
         return response()->json(null, 204);
     }
 
-    public function listarLivros($generoId)
+    public function listarReviews($livroId)
     {
-        return LivroResource::collection($this->service->listarLivros($generoId));
+        return ReviewResource::collection($this->service->listarReviews($livroId));
     }
 
-    public function listarGenerosComLivros()
+    public function listarCompletos()
     {
-        return GeneroResource::collection($this->service->listarComLivros());
+        return LivroResource::collection($this->service->listarComTudo());
     }
 }

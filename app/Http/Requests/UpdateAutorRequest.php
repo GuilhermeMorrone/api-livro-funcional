@@ -14,7 +14,7 @@ class UpdateAutorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nome' => 'sometimes|required|string|max:255',
+            'nome' => 'sometimes|required|string|max:200',
             'data_nascimento' => 'sometimes|required|date',
             'biografia' => 'nullable|string',
         ];

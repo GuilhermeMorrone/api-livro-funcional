@@ -8,9 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Genero extends Model
 {
     use HasFactory;
-
     protected $table = 'generos';
-
     protected $fillable = ['nome'];
 
     public function livros()
@@ -21,7 +19,6 @@ class Genero extends Model
     protected static function boot()
     {
         parent::boot();
-
         static::deleting(function ($genero) {
             $genero->livros()->detach();
         });

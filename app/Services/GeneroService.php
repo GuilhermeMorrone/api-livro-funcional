@@ -8,12 +8,17 @@ class GeneroService
 {
     public function listarTodos()
     {
-        return Genero::with('livros')->get();
+        return Genero::with('livro')->get();
+    }
+
+    public function listarComLivros()
+    {
+        return Genero::with('livro')->get();
     }
 
     public function buscarPorId($id)
     {
-        return Genero::with('livros')->find($id);
+        return Genero::with('livro')->findOrFail($id);
     }
 
     public function criar(array $dados)
@@ -23,26 +28,25 @@ class GeneroService
 
     public function atualizar($id, array $dados)
     {
-        $genero = $this->buscarPorId($id);
-        if ($genero) {
-            $genero->update($dados);
-            return $genero;
-        }
-        return null;
+        $genero = Genero::findOrFail($id);
+        $genero->update($dados);
+        return $genero;
     }
 
     public function deletar($id)
     {
-        $genero = $this->buscarPorId($id);
-        if ($genero) {
-            // Desvincula livros (seta o genero_id como null)
-            foreach ($genero->livros as $livro) {
-                $livro->genero_id = null;
-                $livro->save();
-            }
-            $genero->delete();
-            return true;
-        }
-        return false;
+        $genero = Genero::findOrFail($id);
+        return $genero->delete();
     }
+
+    public function listarLivros($generoId)
+    {
+        $genero = Genero::with('livro')->findOrFail($generoId);
+        return $genero->livro;
+    }
+    public function buscarComLivros($id)
+    {
+        return Genero::with('livro')->findOrFail($id);
+    }
+
 }

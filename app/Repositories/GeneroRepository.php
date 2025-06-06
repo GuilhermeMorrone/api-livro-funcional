@@ -1,47 +1,14 @@
-<?php
-
+<?php 
 namespace App\Repositories;
 
 use App\Models\Genero;
 
 class GeneroRepository
 {
-    public function all()
-    {
-        return Genero::all();
-    }
-
-    public function find($id)
-    {
-        return Genero::find($id);
-    }
-
-    public function create(array $data)
-    {
-        return Genero::create($data);
-    }
-
-    public function update($id, array $data)
-    {
-        $genero = $this->find($id);
-        if ($genero) {
-            $genero->update($data);
-            return $genero;
-        }
-        return null;
-    }
-
-    public function delete($id)
-    {
-        $genero = $this->find($id);
-        if ($genero) {
-            return $genero->delete();
-        }
-        return false;
-    }
-
-    public function withLivros()
-    {
-        return Genero::with('livros')->get();
-    }
+    public function all()               { return Genero::with('livro')->get(); }
+    public function find($id)          { return Genero::with('livro')->findOrFail($id); }
+    public function create($data)      { return Genero::create($data); }
+    public function update($id, $d)    { $g = Genero::findOrFail($id); $g->update($d); return $g; }
+    public function delete($id)        { return Genero::findOrFail($id)->delete(); }
+    public function livro($id)        { return Genero::findOrFail($id)->livro; }
 }

@@ -8,12 +8,22 @@ class AutorService
 {
     public function listarTodos()
     {
-        return Autor::with('livros')->get();
+        return Autor::with('livro')->get();
+    }
+
+    public function listarComLivros()
+    {
+        return Autor::with('livro')->get();
     }
 
     public function buscarPorId($id)
     {
-        return Autor::with('livros')->find($id);
+        return Autor::findOrFail($id);
+    }
+
+    public function buscarComLivros($id)
+    {
+        return Autor::with('livro')->findOrFail($id);
     }
 
     public function criar(array $dados)
@@ -23,26 +33,20 @@ class AutorService
 
     public function atualizar($id, array $dados)
     {
-        $autor = $this->buscarPorId($id);
-        if ($autor) {
-            $autor->update($dados);
-            return $autor;
-        }
-        return null;
+        $autor = Autor::findOrFail($id);
+        $autor->update($dados);
+        return $autor;
     }
 
     public function deletar($id)
     {
-        $autor = $this->buscarPorId($id);
-        if ($autor) {
-            // Apaga todos os livros do autor (que apagarão as reviews via cascade)
-            foreach ($autor->livros as $livro) {
-                $livro->reviews()->delete();
-                $livro->delete();
-            }
-            $autor->delete();
-            return true;
-        }
-        return false;
+        $autor = Autor::findOrFail($id);
+        return $autor->delete();
+    }
+
+    public function listarLivros($autorId)
+    {
+        $autor = Autor::with('livro')->findOrFail($autorId);
+        return $autor->livro;
     }
 }

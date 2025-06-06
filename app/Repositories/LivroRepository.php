@@ -1,47 +1,14 @@
 <?php
-
 namespace App\Repositories;
 
-use App\Models\Livro;
+use App\Models\Autor;
 
-class LivroRepository
+class AutorRepository
 {
-    public function all()
-    {
-        return Livro::all();
-    }
-
-    public function find($id)
-    {
-        return Livro::find($id);
-    }
-
-    public function create(array $data)
-    {
-        return Livro::create($data);
-    }
-
-    public function update($id, array $data)
-    {
-        $livro = $this->find($id);
-        if ($livro) {
-            $livro->update($data);
-            return $livro;
-        }
-        return null;
-    }
-
-    public function delete($id)
-    {
-        $livro = $this->find($id);
-        if ($livro) {
-            return $livro->delete();
-        }
-        return false;
-    }
-
-    public function withRelations()
-    {
-        return Livro::with(['reviews', 'autor', 'genero'])->get();
-    }
+    public function all()               { return Autor::with('livro')->get(); }
+    public function find($id)          { return Autor::with('livro')->findOrFail($id); }
+    public function create($data)      { return Autor::create($data); }
+    public function update($id, $d)    { $a = Autor::findOrFail($id); $a->update($d); return $a; }
+    public function delete($id)        { return Autor::findOrFail($id)->delete(); }
+    public function livro($id)        { return Autor::findOrFail($id)->livro; }
 }

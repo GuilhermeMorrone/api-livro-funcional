@@ -2,83 +2,54 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Autor;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreAutorRequest;
+use App\Http\Requests\UpdateAutorRequest;
 use App\Http\Resources\AutorResource;
 use App\Http\Resources\LivroResource;
+use App\Services\AutorService;
 
 class AutorController extends Controller
 {
-    // Listar todos os autores
+    protected $service;
+
+    public function __construct(AutorService $service)
+    {
+        $this->service = $service;
+    }
+
     public function index()
     {
-        $autores = Autor::all();
-        return AutorResource::collection($autores);
+        return AutorResource::collection($this->service->listarComLivros());
     }
 
-    // Buscar autor por ID
+    public function store(StoreAutorRequest $request)
+    {
+        return new AutorResource($this->service->criar($request->validated()));
+    }
+
     public function show($id)
     {
-        $autor = Autor::findOrFail($id);
-        return new AutorResource($autor);
+        return new AutorResource($this->service->buscarComLivros($id));
     }
 
-    // Criar autor
-    public function store(Request $request)
+    public function update(UpdateAutorRequest $request, $id)
     {
-        $request->validate([
-            'nome' => 'required|string|max:255',
-            'data_nascimento' => 'required|date',
-            'biografia' => 'nullable|string',
-        ]);
-
-        $autor = Autor::create($request->only('nome', 'data_nascimento', 'biografia'));
-
-        return new AutorResource($autor);
+        return new AutorResource($this->service->atualizar($id, $request->validated()));
     }
 
-    // Atualizar autor
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'nome' => 'sometimes|required|string|max:255',
-            'data_nascimento' => 'sometimes|required|date',
-            'biografia' => 'nullable|string',
-        ]);
-
-        $autor = Autor::findOrFail($id);
-        $autor->update($request->only('nome', 'data_nascimento', 'biografia'));
-
-        return new AutorResource($autor);
-    }
-
-    // Deletar autor + livros e reviews relacionados
     public function destroy($id)
     {
-        $autor = Autor::findOrFail($id);
-
-        foreach ($autor->livros as $livro) {
-            $livro->reviews()->delete(); 
-            $livro->delete();
-        }
-
-        $autor->delete();
-
+        $this->service->deletar($id);
         return response()->json(null, 204);
     }
 
-    // Listar autores com seus livros (rota extra)
-    public function listarAutoresComLivros()
+    public function listarLivros($autorId)
     {
-        $autores = Autor::with('livros')->get();
-        return AutorResource::collection($autores);
+        return LivroResource::collection($this->service->listarLivros($autorId));
     }
 
-    // Listar livros de um autor (rota extra)
-    public function listarLivros($id)
+    public function listarAutoresComLivros()
     {
-        $autor = Autor::findOrFail($id);
-        $livros = $autor->livros;
-        return LivroResource::collection($livros);
+        return AutorResource::collection($this->service->listarComLivros());
     }
 }

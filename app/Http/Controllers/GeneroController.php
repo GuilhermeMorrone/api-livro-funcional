@@ -2,70 +2,54 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Genero;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreGeneroRequest;
+use App\Http\Requests\UpdateGeneroRequest;
 use App\Http\Resources\GeneroResource;
 use App\Http\Resources\LivroResource;
+use App\Services\GeneroService;
 
 class GeneroController extends Controller
 {
+    protected $service;
+
+    public function __construct(GeneroService $service)
+    {
+        $this->service = $service;
+    }
+
     public function index()
     {
-        $generos = Genero::with('livros')->get();
-        return GeneroResource::collection($generos);
+        return GeneroResource::collection($this->service->listarComLivros());
+    }
+
+    public function store(StoreGeneroRequest $request)
+    {
+        return new GeneroResource($this->service->criar($request->validated()));
     }
 
     public function show($id)
     {
-        $genero = Genero::with('livros')->findOrFail($id);
-        return GeneroResource::make($genero);
+        return new GeneroResource($this->service->buscarComLivros($id));
     }
 
-    public function listarGenerosComLivros()
+    public function update(UpdateGeneroRequest $request, $id)
     {
-        $generos = Genero::with('livros')->get();
-        return GeneroResource::collection($generos);
-    }
-
-    public function listarLivros($id)
-    {
-        $genero = Genero::findOrFail($id);
-        $livros = $genero->livros;
-        return LivroResource::collection($livros);
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nome' => 'required|string|max:255',
-        ]);
-
-        $genero = Genero::create($request->all());
-        return GeneroResource::make($genero);
-    }
-
-    public function update(Request $request, $id)
-    {
-        $genero = Genero::findOrFail($id);
-
-        $request->validate([
-            'nome' => 'sometimes|required|string|max:255',
-        ]);
-
-        $genero->update($request->all());
-        return GeneroResource::make($genero);
+        return new GeneroResource($this->service->atualizar($id, $request->validated()));
     }
 
     public function destroy($id)
     {
-        $genero = Genero::findOrFail($id);
-
-        foreach ($genero->livros as $livro) {
-            $livro->genero_id = null;
-            $livro->save();
-        }
-
-        $genero->delete();
+        $this->service->deletar($id);
         return response()->json(null, 204);
+    }
+
+    public function listarLivros($generoId)
+    {
+        return LivroResource::collection($this->service->listarLivros($generoId));
+    }
+
+    public function listarGenerosComLivros()
+    {
+        return GeneroResource::collection($this->service->listarComLivros());
     }
 }

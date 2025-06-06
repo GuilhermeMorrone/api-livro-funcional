@@ -2,70 +2,49 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Usuario;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreUsuarioRequest;
+use App\Http\Requests\UpdateUsuarioRequest;
 use App\Http\Resources\UsuarioResource;
 use App\Http\Resources\ReviewResource;
-use Illuminate\Support\Facades\Hash;
+use App\Services\UsuarioService;
 
 class UsuarioController extends Controller
 {
+    protected $service;
+
+    public function __construct(UsuarioService $service)
+    {
+        $this->service = $service;
+    }
+
     public function index()
     {
-        $usuarios = Usuario::all();
-        return UsuarioResource::collection($usuarios);
+        return UsuarioResource::collection($this->service->listar());
+    }
+
+    public function store(StoreUsuarioRequest $request)
+    {
+        return new UsuarioResource($this->service->criar($request->validated()));
     }
 
     public function show($id)
     {
-        $usuario = Usuario::findOrFail($id);
-        return new UsuarioResource($usuario);
+        return new UsuarioResource($this->service->buscar($id));
     }
 
-    public function listarReviews($id)
+    public function update(UpdateUsuarioRequest $request, $id)
     {
-        $usuario = Usuario::findOrFail($id);
-        $reviews = $usuario->reviews;
-        return ReviewResource::collection($reviews);
+        return new UsuarioResource($this->service->atualizar($id, $request->validated()));
     }
 
-    public function store(Request $request)
+    public function destroy($id)
     {
-        $validated = $request->validate([
-            'nome' => 'required|string|max:255',
-            'email' => 'required|email|unique:usuarios,email',
-            'senha' => 'required|string|min:6',
-        ]);
-
-        $validated['senha'] = Hash::make($validated['senha']);
-        $usuario = Usuario::create($validated);
-
-        return new UsuarioResource($usuario);
-    }
-
-    public function update(Request $request, $id)
-    {
-        $usuario = Usuario::findOrFail($id);
-
-        $validated = $request->validate([
-            'nome' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|unique:usuarios,email,' . $id,
-            'senha' => 'sometimes|required|string|min:6',
-        ]);
-
-        if (isset($validated['senha'])) {
-            $validated['senha'] = Hash::make($validated['senha']);
-        }
-
-        $usuario->update($validated);
-
-        return new UsuarioResource($usuario);
-    }
-
-    public function deletar($id)
-    {
-        $usuario = Usuario::findOrFail($id);
-        $usuario->delete();
+        $this->service->deletar($id);
         return response()->json(null, 204);
+    }
+
+    public function listarReviews($usuarioId)
+    {
+        return ReviewResource::collection($this->service->listarReviews($usuarioId));
     }
 }

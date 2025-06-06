@@ -2,71 +2,54 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Livro;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreGeneroRequest;
+use App\Http\Requests\UpdateGeneroRequest;
+use App\Http\Resources\GeneroResource;
 use App\Http\Resources\LivroResource;
-use App\Http\Resources\ReviewResource;
+use App\Services\GeneroService;
 
-class LivroController extends Controller
+class GeneroController extends Controller
 {
+    protected $service;
+
+    public function __construct(GeneroService $service)
+    {
+        $this->service = $service;
+    }
+
     public function index()
     {
-        $livros = Livro::with(['reviews', 'autor', 'genero'])->get();
-        return LivroResource::collection($livros);
+        return GeneroResource::collection($this->service->listarComLivros());
+    }
+
+    public function store(StoreGeneroRequest $request)
+    {
+        return new GeneroResource($this->service->criar($request->validated()));
     }
 
     public function show($id)
     {
-        $livro = Livro::with(['reviews', 'autor', 'genero'])->findOrFail($id);
-        return LivroResource::make($livro);
+        return new GeneroResource($this->service->buscarComLivros($id));
     }
 
-    public function listarReviews($id)
+    public function update(UpdateGeneroRequest $request, $id)
     {
-        $livro = Livro::findOrFail($id);
-        $reviews = $livro->reviews;
-        return ReviewResource::collection($reviews);
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'titulo' => 'required|string|max:255',
-            'autor_id' => 'required|exists:autores,id',
-            'genero_id' => 'nullable|exists:generos,id',
-           
-        ]);
-
-        $livro = Livro::create($request->all());
-        return LivroResource::make($livro)->response()->setStatusCode(201);
-    }
-
-    public function update(Request $request, $id)
-    {
-        $livro = Livro::findOrFail($id);
-
-        $request->validate([
-            'titulo' => 'sometimes|required|string|max:255',
-            'autor_id' => 'sometimes|required|exists:autores,id',
-            'genero_id' => 'nullable|exists:generos,id',
-        ]);
-
-        $livro->update($request->all());
-        return LivroResource::make($livro);
+        return new GeneroResource($this->service->atualizar($id, $request->validated()));
     }
 
     public function destroy($id)
     {
-        $livro = Livro::findOrFail($id);
-        $livro->delete();
+        $this->service->deletar($id);
         return response()->json(null, 204);
     }
 
-    public function listarLivrosComReviewsAutorGenero()
+    public function listarLivros($generoId)
     {
-        $livros = Livro::with(['reviews', 'autor', 'genero'])->get();
-        return response()->json($livros);
+        return LivroResource::collection($this->service->listarLivros($generoId));
     }
 
+    public function listarGenerosComLivros()
+    {
+        return GeneroResource::collection($this->service->listarComLivros());
+    }
 }
-

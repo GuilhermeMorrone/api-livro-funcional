@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class GeneroRequest extends FormRequest
+class StoreAutorRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -15,6 +15,8 @@ class GeneroRequest extends FormRequest
     {
         return [
             'nome' => 'required|string|max:255',
+            'data_nascimento' => 'required|date',
+            'biografia' => 'nullable|string',
         ];
     }
 }

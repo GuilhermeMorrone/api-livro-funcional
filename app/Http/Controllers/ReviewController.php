@@ -2,64 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Review;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreReviewRequest;
+use App\Http\Requests\UpdateReviewRequest;
 use App\Http\Resources\ReviewResource;
+use App\Services\ReviewService;
 
 class ReviewController extends Controller
 {
+    protected $service;
+
+    public function __construct(ReviewService $service)
+    {
+        $this->service = $service;
+    }
+
     public function index()
     {
-        $reviews = Review::all();
-        return ReviewResource::collection($reviews);
+        return ReviewResource::collection($this->service->listarComRelacionamentos());
+    }
+
+    public function store(StoreReviewRequest $request)
+    {
+        return new ReviewResource($this->service->criar($request->validated()));
     }
 
     public function show($id)
     {
-        $review = Review::find($id);
-        if (!$review) {
-            return response()->json(['message' => 'Review não encontrada'], 404);
-        }
-        return new ReviewResource($review);
+        return new ReviewResource($this->service->buscarComRelacionamentos($id));
     }
 
-    public function store(Request $request)
+    public function update(UpdateReviewRequest $request, $id)
     {
-        $request->validate([
-            'nota' => 'required|integer|min:0|max:5',
-            'comentario' => 'required|string',
-            'livro_id' => 'required|exists:livros,id',
-            'usuario_id' => 'required|exists:usuarios,id',
-        ]);
-
-        $review = Review::create($request->all());
-        return new ReviewResource($review);
-    }
-
-    public function update(Request $request, $id)
-    {
-        $review = Review::find($id);
-        if (!$review) {
-            return response()->json(['message' => 'Review não encontrada'], 404);
-        }
-
-        $request->validate([
-            'nota' => 'integer|min:0|max:5',
-            'comentario' => 'string',
-        ]);
-
-        $review->update($request->all());
-        return new ReviewResource($review);
+        return new ReviewResource($this->service->atualizar($id, $request->validated()));
     }
 
     public function destroy($id)
     {
-        $review = Review::find($id);
-        if (!$review) {
-            return response()->json(['message' => 'Review não encontrada'], 404);
-        }
-
-        $review->delete();
-        return response()->json(['message' => 'Review deletada com sucesso']);
+        $this->service->deletar($id);
+        return response()->json(null, 204);
     }
 }
